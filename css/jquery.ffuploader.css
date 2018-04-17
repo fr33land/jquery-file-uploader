@@ -4,9 +4,9 @@
 }
 
 .ff-uploader-file-remove-icon{
-  background-image: url('../img/delete.gif');
+  background-image: url('../img/delete.png');
   background-repeat: no-repeat;
-  background-size: 24px 24px;
+  background-size: 16px 16px;
   background-position-y: center;
   width: 14px;
   min-height: 14px;
@@ -21,7 +21,6 @@ li span.ff-uploader-list-item-text{
 
 li.ff-uploader-list-item{
   width: 300px;
-  border-bottom: 1px solid #d2e9d1;
   margin-bottom: 5px;
 }
 

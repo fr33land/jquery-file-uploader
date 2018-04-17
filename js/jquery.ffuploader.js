@@ -191,6 +191,7 @@
       var fileSizeConv = (file.size / fileSizeMultipliers[this.options.fileSizeMetric]);
       if (fileSizeConv > this.options.maxFileSize) {
         fileMaxSizeExceed = true;
+		console.log("Error: fileSizeExceeds");
         $(this.element).trigger("fileSizeExceeds", [file.name, fileSizeConv]);
       }
       return fileMaxSizeExceed;
@@ -207,10 +208,15 @@
             fileInValidExtension = false;
           }
         } else {
+		  console.log("Error: fileTypeUnknown");
           $(this.element).trigger("fileTypeUnknown", [file.name, file.type]);
         }
-      }
+      } else{
+		fileInValidExtension =false;
+	  }
+	  
       if (fileInValidExtension) {
+		console.log("Error: fileInvalidExtension");
         $(this.element).trigger("fileInvalidExtension", [file.name, file.type]);
       }
       return fileInValidExtension;
@@ -220,6 +226,7 @@
       var c = this;
       $.each(this._files, function (index, value) {
         if (file.name === value.name || file.name === value) {
+		  console.log("Error: fileAlreadyExists");
           $(c.element).trigger("fileAlreadyExists", file.name);
           fileExists = true;
         }
