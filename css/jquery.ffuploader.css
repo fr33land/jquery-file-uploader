@@ -1,0 +1,31 @@
+.ff-uploader {
+  display: inline-table;
+  width:400px;
+}
+
+.ff-uploader-file-remove-icon{
+  background-image: url('../img/delete.gif');
+  background-repeat: no-repeat;
+  background-size: 24px 24px;
+  background-position-y: center;
+  width: 14px;
+  min-height: 14px;
+  display: table-cell;
+  padding-right: 10px;
+  cursor: pointer;
+}
+
+li span.ff-uploader-list-item-text{
+  display: table-cell;
+}
+
+li.ff-uploader-list-item{
+  width: 300px;
+  border-bottom: 1px solid #d2e9d1;
+  margin-bottom: 5px;
+}
+
+ul.ff-uploader-files-list {
+  list-style: none;
+  padding: 0;
+}

@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <title>ccPicker demo</title>
+        <meta charset="UTF-8"></meta>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+		<script src="https://code.jquery.com/jquery-1.12.4.min.js" type="text/javascript"></script>
+        <script src="js/jquery.ffuploader.js" type="text/javascript"></script>
+		<link rel="stylesheet" type="text/css" href="css/jquery.ffuploader.css">
+		<script>
+			$( document ).ready(function() {
+				$("#fileUpload").FFUploader();
+			});
+		</script>
+    </head>
+    <body>
+        <div>
+            <form id="mainForm" action="fileuploader.html" method="POST">
+			<div class="input">
+                <input type="file" id="fileUpload" name="fileUpload" class="file-field"/>
+			</div>
+			<br/>
+			<input type="submit" value="Submit">
+            </form>
+        </div>
+    </body>
+</html>
