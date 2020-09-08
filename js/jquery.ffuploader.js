@@ -18,7 +18,8 @@
     maxFileSize: 10,
     fileSizeMetric: 'M',
     browseButtonCaption: "Browse",
-    allowedExtensions: []
+    allowedExtensions: [],
+    extensionMaxFileSize: []
   };
 
   var fileSizeMultipliers = {
@@ -35,8 +36,9 @@
     "image/gif": ["gif"],
     "image/bmp": ["bmp"],
     "application/msword": ["doc"],
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ["docx"]
-  }
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ["docx"],
+    "adoc": ["adoc"]
+  };
 
   function FFUploader(element, options) {
     var self = this;
@@ -78,7 +80,6 @@
       $(self.element).prop("disabled", false);
       self._browseButton.prop("disabled", false);
     }
-
     return {
       getFileList: getFileList,
       addFileToListing: addFileToListing,
@@ -93,9 +94,9 @@
     init: function () {
       var c = this;
       $(this.element).css('display', 'none');
-      this._ffUploader = $('<div class="ff-uploader">').insertAfter(this.element);
+      this._ffUploader = $('<div class="ff-uploader" style="width: auto">').insertAfter(this.element);
       this._fileBrowserDiv = $('<div class="ff-uploader-browser">');
-      this._fileListDiv = $('<div class="ff-uploader-files">');
+      this._fileListDiv = $('<div class="ff-uploader-files" style="width: 120px">');
       this._ffUploader.append(this._fileBrowserDiv);
       this._ffUploader.append(this._fileListDiv);
 
@@ -112,7 +113,7 @@
         type: 'button',
         id: this.element.id + '_ff-browser-button',
         name: this.element.name + '_ff-browser-button',
-        class: 'button'
+        class: 'button btn upload_button'
       });
       this._browseButton.append(c.options.browseButtonCaption);
       this._browseButton.appendTo(this._fileBrowserDiv);
@@ -128,7 +129,10 @@
       });
 
       this._fileInput.on("change", function (e) {
-        c.addFileToList(c, e.target.files[0]);
+        var fileAdded = c.addFileToList(c, e.target.files[0]);
+        if (!fileAdded) {
+          this.value = '';
+        }
       });
 
     },
@@ -137,13 +141,18 @@
     },
     addFileToList: function (c, file) {
       if (this.checkFileExists(file))
-        return;
+        return false;
 
       if (this.checkFileExtension(file))
-        return;
+        return false;
 
-      if (this.checkFileSizeExceed(file))
-        return;
+      if (this.options.extensionMaxFileSize) {
+        if (this.checkFileSizeExceedByExtension(file))
+          return false;
+      } else {
+        if (this.checkFileSizeExceed(file))
+          return false;
+      }
 
       var fileItem = $("<li class='ff-uploader-list-item' data-no=" + this._fileCount + "><div class='ff-uploader-file-remove-icon'></div> <span class='ff-uploader-list-item-text'>" + file.name + "</span></li>");
       $(fileItem).children("div.ff-uploader-file-remove-icon").on("click", function () {
@@ -156,6 +165,7 @@
         this._browseButton.prop("disabled", true);
       }
       $(c.element).trigger("fileAddedToList", file);
+      return true;
     },
     removeFileFromList: function (n, l) {
       var c = this;
@@ -191,33 +201,39 @@
       var fileSizeConv = (file.size / fileSizeMultipliers[this.options.fileSizeMetric]);
       if (fileSizeConv > this.options.maxFileSize) {
         fileMaxSizeExceed = true;
-		console.log("Error: fileSizeExceeds");
-        $(this.element).trigger("fileSizeExceeds", [file.name, fileSizeConv]);
+        $(this.element).trigger("fileSizeExceeds", [file.name, fileSizeConv, this.options.maxFileSize]);
       }
       return fileMaxSizeExceed;
     },
+    checkFileSizeExceedByExtension: function (file) {
+      var fileSizeExceedsByExtension = false;
+      var fileSizeConv = (file.size / fileSizeMultipliers[this.options.fileSizeMetric]);
+      var fileType = file.name.split('.').pop();
+      if (fileSizeConv > this.options.extensionMaxFileSize[fileType]) {
+        fileSizeExceedsByExtension = true;
+        $(this.element).trigger("fileSizeExceedsByExtension", [file.name, fileSizeConv, this.options.extensionMaxFileSize[fileType], fileType]);
+      }
+      return fileSizeExceedsByExtension;
+    },
     checkFileExtension: function (file) {
+      debugger;
       var c = this;
       var fileInValidExtension = true;
+      var fileType = file.type === "" ? fileType = file.name.split('.').pop() : file.type;
       if (this.options.allowedExtensions !== "") {
-        if (fileType2ExtensionMap[file.type] !== undefined) {
-          var resArray = fileType2ExtensionMap[file.type].filter(function (value) {
+        if (fileType2ExtensionMap[fileType] !== undefined) {
+          var resArray = fileType2ExtensionMap[fileType].filter(function (value) {
             return c.options.allowedExtensions.indexOf(value) > -1;
           });
           if (resArray.length > 0) {
             fileInValidExtension = false;
           }
         } else {
-		  console.log("Error: fileTypeUnknown");
-          $(this.element).trigger("fileTypeUnknown", [file.name, file.type]);
+          $(this.element).trigger("fileTypeUnknown", [file.name, fileType]);
         }
-      } else{
-		fileInValidExtension =false;
-	  }
-	  
+      }
       if (fileInValidExtension) {
-		console.log("Error: fileInvalidExtension");
-        $(this.element).trigger("fileInvalidExtension", [file.name, file.type]);
+        $(this.element).trigger("fileInvalidExtension", [file.name, fileType]);
       }
       return fileInValidExtension;
     },
@@ -226,7 +242,6 @@
       var c = this;
       $.each(this._files, function (index, value) {
         if (file.name === value.name || file.name === value) {
-		  console.log("Error: fileAlreadyExists");
           $(c.element).trigger("fileAlreadyExists", file.name);
           fileExists = true;
         }
