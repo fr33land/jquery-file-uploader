@@ -1,3 +1,15 @@
+/*
+ * jQuery file uploader plugin v 1.1 
+ * https://github.com/fr33land/jquery-file-uploader
+ * 
+ * Author: Rokas Sabaliauskas(fr33land) 
+ * Email: rrokass@gmail.com 
+ *  
+ * Copyright 2018
+ * Licensed under the MIT license. 
+ * http://www.opensource.org/licenses/mit-license.php 
+ */
+
 (function (factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD
