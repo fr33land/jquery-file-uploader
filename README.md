@@ -1,2 +1,2 @@
-# jquery-file-upoloader
+# jquery-file-uploader
 JQuery file uploader plugin
